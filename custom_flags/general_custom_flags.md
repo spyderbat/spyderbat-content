@@ -2,73 +2,149 @@
 
 ## Flag: A Process Masquerading as a System Process
 
-- **Target Objects**: Processes
-- **Query**: Detect any process that attempts to copy files from `/bin` directories or processes with names that are commonly associated with system processes but are not executed from the usual binary directories (e.g., `/usr/bin`, `/sbin`, `/bin`). Example query: `( process name = "cp" and args[*] ~~= "(/usr)?/s?bin/.*")`.
-- **Flag**: Processes masquerading as system processes can be indicative of an attacker trying to blend in with normal operations or escalate privileges.
-- **Next Steps**:  
-  1. Remove the fake or suspicious process.  
-  2. Investigate further actions taken by this masquerading process to determine if additional compromises occurred.
-- **MITRE Technique**: T1036.003 (Masquerading as a System Process)
-- **Atomic Red Team Tests**: T1036.003-2 (Masquerading as FreeBSD or Linux `crond` process)
+- **Name**: Process Masquerading as a System Process
+- **Schema**: Process
+- **Query**: `(process name = "cp" and args[*] ~~= "/usr)?/s?bin/.*"`
+![alt text](images/image-7.png)
+- **Description**: process masquerading as a legitimate system process, either by name or by its execution path.
+- **Severity**: High
+- **Type**: Masquerading Detection
+- **MITRE**: https://attack.mitre.org/techniques/T1036/003/
+- **Impact**: Possible attacker blending in with normal operations to escalate privileges or perform unauthorized actions.
+- **Content**:
+  #### Summary
+  Spyderbat detected a process attempting to masquerade as a system process. These actions may indicate an attacker trying to blend into normal operations.
+
+  #### Information
+  Processes masquerading as system processes can be an attempt to escalate privileges or hide malicious activities. This could involve copying files from system directories or naming processes to mimic real system processes.
+
+  #### Action Steps
+  1. Remove the fake or suspicious process.
+  2. Investigate further actions taken by this process to determine if any compromises have occurred.
 
 ---
 
 ## Flag: Access to Sensitive Files (/etc/{shadow,passwd,master.passwd})
-- **Target Objects**: Processes
-- **Query**: Detect any process that accesses sensitive files such as `/etc/shadow`, `/etc/passwd`, or `/etc/master.passwd`, especially when used in shell built-ins. Example query: `args[*] ~= "*/etc/shadow*"`.
-- **Flag**: Unauthorized access to these files can lead to credential theft and further system compromise.
-- **Next Steps**:  
-  1. Change all affected passwords immediately.  
-  2. Remove any malicious access points or shells.  
-  3. Monitor for further attempts to access these files.
-- **MITRE Technique**: T1003.008 (OS Credential Dumping via `/etc/shadow`)
-- **Atomic Red Team Tests**: T1003.008-5 (Access `/etc/{shadow,passwd,master.passwd}` using shell built-ins)
+
+- **Name**: Access to Sensitive Files
+- **Schema**: Process
+- **Query**: `args[*] ~= "*/etc/shadow*"`
+![alt text](images/image-3.png)
+- **Description**: Process attempting to access sensitive system files such as `/etc/shadow`, `/etc/passwd`, or `/etc/master.passwd`.
+- **Severity**: Critical
+- **Type**: OS Credential Dumping
+- **MITRE**: https://attack.mitre.org/techniques/T1003/008/
+- **Impact**: Unauthorized access to sensitive files can lead to credential theft and system compromise.
+- **Content**:
+  #### Summary
+  Spyderbat detected an unauthorized attempt to access sensitive files, such as `/etc/shadow`. These files contain critical system credentials.
+
+  #### Information
+  Accessing files like `/etc/shadow` or `/etc/passwd` can lead to credential theft. Such actions are highly suspicious and indicative of a possible compromise.
+
+  #### Action Steps
+  1. Change all affected passwords immediately.
+  2. Remove any malicious access points or shells.
+  3. Monitor for further unauthorized access attempts.
+
 
 ---
 
 ## Flag: Suspicious Obfuscating Process Names or Arguments
-- **Target Objects**: Processes
-- **Query**: Detect any process with suspicious or obfuscated names and arguments, such as process names with unusual patterns or extra spaces. Example query: `args[0] ~= '*..*' or args[0] ~= '* ' or exe ~= '* ' or exe ~= '*..*'`.
-- **Flag**: Obfuscation in process names or arguments can be an attempt to hide malicious activity or evade detection.
-- **Next Steps**:  
-  1. Investigate the origin and purpose of the process.  
-  2. Determine if the process is malicious or legitimate.  
-  3. Take appropriate action to prevent further obfuscation attempts.
-- **MITRE Technique**: T1036.005 (Masquerading via Space After Filename) and T1036.006 (Masquerading via Name Similarity)
-- **Atomic Red Team Tests**: T1036.006-2 (Space After Filename) & T1036.005-1 (Process from Directory Masquerading as Parent)
+
+- **Name**: Suspicious Obfuscating Process Names or Arguments
+- **Schema**: Process
+- **Query**: `args[0] ~= '*..*' or args[0] ~= '* ' or exe ~= '* ' or exe ~= '*..*'`
+![alt text](images/image-6.png)
+- **Description**: Process with obfuscated or suspicious names and arguments, possibly hiding malicious activity.
+- **Severity**: Medium
+- **Type**: Masquerading Detection
+- **MITRE**: https://attack.mitre.org/techniques/T1036/005/
+- **Impact**: Obfuscated process names or arguments are often used to hide malicious activity.
+- **Content**:
+  #### Summary
+  Spyderbat detected a process with suspicious or obfuscated names/arguments, potentially hiding malicious activity.
+
+  #### Information
+  Obfuscation techniques can be used by attackers to evade detection. Unusual patterns, extra spaces, or strange argument formats are typical signs of this behavior.
+
+  #### Action Steps
+  1. Investigate the origin and purpose of the process.
+  2. Determine if the process is malicious or legitimate.
+  3. Take action to prevent further obfuscation attempts.
+
 
 ---
 
+
 ## Flag: Suspicious Access to Dynamic Linking Preload
-- **Target Objects**: Processes
-- **Query**: Detect any process attempting to modify `/etc/ld.so.preload`, which could lead to dynamic linker-based rootkit attacks. Example query: `args[*] ~= "*/etc/ld.so.preload*"`.
-- **Flag**: Modifying the dynamic linking preload can allow attackers to load malicious shared libraries, leading to system-level compromises.
-- **Next Steps**:  
-  1. Investigate which processes have modified `/etc/ld.so.preload`.  
-  2. Analyze the changes and determine the impact on the system.  
-  3. Remove or mitigate any unauthorized modifications.
-- **MITRE Technique**: T1014 (Rootkit via Dynamic Linker Preloading)
-- **Atomic Red Team Tests**: T1014-3 (Dynamic-Linker Based Rootkit)
+
+- **Name**: Suspicious Access to Dynamic Linking Preload
+- **Schema**: Process
+- **Query**: `args[*] ~= "*/etc/ld.so.preload*"`
+![alt text](images/image-4.png)
+- **Description**: Process attempting to modify /etc/ld.so.preload to load malicious libraries.
+- **Severity**: High
+- **Type**: Rootkit Detection
+- **MITRE** - https://attack.mitre.org/techniques/T1014/ 
+- **Impact**: Modifying the preload could lead to dynamic linker-based rootkit attacks.
+- **Content**:
+  #### Summary
+  Spyderbat detected an attempt to modify `/etc/ld.so.preload`. This action can be used to load malicious libraries, compromising the system.
+
+  #### Information
+  Attackers may use `/etc/ld.so.preload` to introduce rootkits by loading unauthorized shared libraries.
+
+  #### Action Steps
+  1. Investigate which processes have modified `/etc/ld.so.preload`.
+  2. Analyze the changes and determine the impact on the system.
+  3. Remove or mitigate unauthorized modifications.
 
 ---
 
 ## Flag: Unapproved User Activity in a Restricted Cluster
-- **Target Objects**: Processes
-- **Query**: Track any processes in highly restrictive clusters where the user executing the process is not authorized (e.g., user is not the desired user). Example scenario: `machine.ref` and `cluster-name == "desired"` and `user != input_user`.
-- **Flag**: Unauthorized user activity in a restricted environment could indicate a potential breach or policy violation.
-- **Next Steps**:  
-  1. Investigate the unauthorized process and the user running it.  
-  2. Determine if any unauthorized access or actions were taken.  
-  3. Adjust cluster security policies to tighten restrictions.
-  
+
+- **Name**: Unapproved User Activity in a Restricted Cluster
+- **Schema**: Process
+- **Query**: auser != "SYSTEM" and machine.cluster_name = "integrationcluster3"
+![alt text](images/image-8.png)
+- **Description** Unauthorized user in a restricted cluster.
+- **Severity**: Medium
+- **Type**: Unauthorized Access Detection
+- **Impact**: Unapproved user activity could indicate a policy violation or security breach.
+- **Content**:
+  #### Summary
+  Spyderbat detected unauthorized activity in a restricted cluster. The user executing the process is not authorized to run tasks within this cluster.
+
+  #### Information
+  Restricted environments are meant to limit access to sensitive operations. Unauthorized processes within these environments could signal a breach or policy violation.
+
+  #### Action Steps
+  1. Investigate the unauthorized process and the user running it.
+  2. Adjust security policies to prevent unauthorized access.
+
 ---
 
 ## Flag: Unauthorized Network Connection
-- **Target Objects**: Connections (inbound or outbound)
-- **Query**: Identify connections to suspicious or unauthorized IP ranges, ports, or protocols, such as known command-and-control servers or public IP addresses when the process is expected to remain internal.
-- **Flag**: Unauthorized network connections may indicate data exfiltration, malware communication, or lateral movement within the network.
-- **Next Steps**:  
-  1. Investigate the destination and purpose of the connection.  
-  2. Block unauthorized connections if necessary.  
+
+- **Name**: Unauthorized Network Connection
+- **Schema**: Connection
+- **Query**: Identify connections to suspicious or unauthorized `IP ranges`, `ports`, or `protocols`.
+![alt text](images/image-5.png)
+- **Description**: Unauthorized network connections.
+- **Severity**: High
+- **Type**: Network Anomaly Detection
+- **Impact**: These connections can lead to further network compromise.
+- **Content**:
+  #### Summary
+  Spyderbat detected an unauthorized network connection. This could be indicative of a command-and-control connection or lateral movement within the network.
+
+  #### Information
+  Unauthorized outbound or inbound connections, especially to suspicious IP ranges or protocols, could be part of a larger malicious effort such as data exfiltration.
+
+  #### Action Steps
+  1. Investigate the destination and purpose of the connection.
+  2. Block unauthorized connections if necessary.
   3. Implement tighter network segmentation and monitoring to prevent future unauthorized connections.
-  
+
+---
