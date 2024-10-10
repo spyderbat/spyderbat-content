@@ -125,11 +125,11 @@
   ```
 ---
 
-## Flag: Unauthorized Network Connection
+## Flag: Unauthorized Network Connection (Identify connections to suspicious or unauthorized IP ranges, ports, or protocols)
 
 - **Name**: network-anomaly-detection
 - **Schema**: Connection
-- **Query**: Identify connections to suspicious or unauthorized `IP ranges`, `ports`, or `protocols`.
+- **Query**: `'remote_ip="103.93.37.178"'` or `'remote_port="22"'`
 ![alt text](images/image-5.png)
 - **Description**: "Unauthorized network connections".
 - **Severity**: high
