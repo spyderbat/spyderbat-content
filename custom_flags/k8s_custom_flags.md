@@ -61,12 +61,12 @@
 
 - **Name**: unapproved-container-images
 - **Schema**: Container
-- **Query**: `'images="your-choice-unapproved-image-here"'`
+- **Query**: `'image="your-choice-unapproved-image-here"'`
 ![alt text](images/image-2.png)
-- **Description**: Container running images from unapproved or untrusted sources.
+- **Description**: "Container running images from unapproved or untrusted sources".
 - **Severity**: high
 - **Type**: redflag
-- **Impact**: Running containers with unapproved images can compromise security by introducing vulnerabilities, malicious software, or allowing unauthorized access, potentially leading to data loss or service disruption.
+- **Impact**: "Running containers with unapproved images can compromise security by introducing vulnerabilities, malicious software, or allowing unauthorized access, potentially leading to data loss or service disruption".
 - **Content**:
   ```
   #### Summary:
