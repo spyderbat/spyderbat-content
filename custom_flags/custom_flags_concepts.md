@@ -1,0 +1,2 @@
+Custom Flags in Spyderbat are a powerful feature that enable users to create tailored detection rules to monitor activities or behaviors specific to their environment.
+If you're new to custom-flags concept in Spyderbat, [visit the docs](https://docs.spyderbat.com/concepts/scout/custom-flags).
